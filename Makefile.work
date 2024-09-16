@@ -217,6 +217,7 @@ $(shell CONFIGURED_ARCH=$(CONFIGURED_ARCH) \
 	DEFAULT_CONTAINER_REGISTRY=$(DEFAULT_CONTAINER_REGISTRY) \
 	FIPS_VERSION=$(FIPS_VERSION) \
 	FIPS_GOLANG_VERSION=$(FIPS_GOLANG_VERSION) \
+	COMPILE_HOST_ARCH=$(COMPILE_HOST_ARCH) \
 	j2 $(SLAVE_DIR)/Dockerfile.j2 > $(SLAVE_DIR)/Dockerfile)
 
 $(shell CONFIGURED_ARCH=$(CONFIGURED_ARCH) \
@@ -226,7 +227,7 @@ $(shell CONFIGURED_ARCH=$(CONFIGURED_ARCH) \
 
 ifeq ($(CROSS_BUILD_ENVIRON), y)
 $(shell SONIC_VERSION_CONTROL_COMPONENTS=$(SONIC_VERSION_CONTROL_COMPONENTS) \
-	MIRROR_SNAPSHOT=$(MIRROR_SNAPSHOT) scripts/build_mirror_config.sh $(SLAVE_DIR) amd64 $(BLDENV))
+	MIRROR_SNAPSHOT=$(MIRROR_SNAPSHOT) scripts/build_mirror_config.sh $(SLAVE_DIR) $(COMPILE_HOST_ARCH) $(BLDENV) $(CONFIGURED_ARCH))
 endif
 $(shell SONIC_VERSION_CONTROL_COMPONENTS=$(SONIC_VERSION_CONTROL_COMPONENTS) \
 	MIRROR_SNAPSHOT=$(MIRROR_SNAPSHOT) scripts/build_mirror_config.sh $(SLAVE_DIR) $(CONFIGURED_ARCH) $(BLDENV))
@@ -243,7 +244,7 @@ PREPARE_DOCKER=BUILD_SLAVE=y \
 		"" \
 		$(BLDENV)
 
-$(shell $(PREPARE_DOCKER) )
+$(shell $(PREPARE_DOCKER) ) # TODO: this should call scripts/build_mirror_config.sh too, but why do it twice here and above, and which one is supposed to work?
 
 # Add the versions in the tag, if the version change, need to rebuild the slave
 SLAVE_BASE_TAG = $(shell \
@@ -373,7 +374,7 @@ ifneq ($(MULTIARCH_QEMU_ENVIRON), y)
 endif
 endif
 
-ifneq ($(filter y, $(MULTIARCH_QEMU_ENVIRON) $(CROSS_BUILD_ENVIRON)),)
+ifneq ($(filter y, $(MULTIARCH_QEMU_ENVIRON)),) # no additional march and dockerfs dockerd's for cross build, since we can use DinD in slave docker
 ifeq ($(DOCKER_DATA_ROOT_FOR_MULTIARCH),)
 	DOCKER_DATA_ROOT_FOR_MULTIARCH := /var/lib/march/docker
 endif
@@ -598,8 +599,10 @@ export PIP_HTTP_TIMEOUT
 ifneq ($(filter y, $(MULTIARCH_QEMU_ENVIRON) $(CROSS_BUILD_ENVIRON)),)
 	$(Q)$(DOCKER_MULTIARCH_CHECK)
 ifneq ($(BLDENV), )
+ifeq ($(MULTIARCH_QEMU_ENVIRON), y)
 	$(Q)$(DOCKER_SERVICE_MULTIARCH_CHECK)
 	$(Q)$(DOCKER_SERVICE_DOCKERFS_CHECK)
+endif # no additional march and dockerfs dockerd's for cross build, since we can use DinD in slave docker
 endif
 endif
 	$(Q)$(OVERLAY_MODULE_CHECK)
@@ -621,7 +624,7 @@ sonic-build-hooks:
 	$(Q)cp src/sonic-build-hooks/buildinfo/sonic-build-hooks* $(SLAVE_DIR)/buildinfo
 
 sonic-slave-base-build : | sonic-build-hooks
-ifeq ($(MULTIARCH_QEMU_ENVIRON), y)
+ifneq ($(filter y, $(MULTIARCH_QEMU_ENVIRON) $(CROSS_BUILD_ENVIRON)),) # we still need the whole system to support target arch with qemu in cross build env, so that we can run dockers building target images.
 	$(Q)$(DOCKER_MULTIARCH_CHECK)
 endif
 	$(Q)$(OVERLAY_MODULE_CHECK)

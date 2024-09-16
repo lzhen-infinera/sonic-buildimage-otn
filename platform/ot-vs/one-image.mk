@@ -1,7 +1,7 @@
 # sonic vs one image installer
 
 SONIC_ONE_IMAGE = sonic-ot-vs.bin
-$(SONIC_ONE_IMAGE)_MACHINE = vs
+$(SONIC_ONE_IMAGE)_MACHINE = ot-vs
 $(SONIC_ONE_IMAGE)_IMAGE_TYPE = onie
 $(SONIC_ONE_IMAGE)_INSTALLS += $(SYSTEMD_SONIC_GENERATOR)
 ifeq ($(INSTALL_DEBUG_TOOLS),y)

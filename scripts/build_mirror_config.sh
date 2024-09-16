@@ -4,6 +4,12 @@
 CONFIG_PATH=$1
 export ARCHITECTURE=$2
 export DISTRIBUTION=$3
+ARCHITECTURE_LIST=$2
+if [ -n "$4" ]; then
+    export ARCHITECTURE_LIST=$2,$4
+else
+    export ARCHITECTURE_LIST=$2
+fi
 
 # Handling default
 [[ -z $APT_RETRIES_COUNT ]] && APT_RETRIES_COUNT=20

@@ -26,7 +26,7 @@ setup(
         'pytest-cov',
         'sonic-py-common',
     ],
-    install_requires=['netaddr==0.8.0', 'pyyaml'],
+    install_requires=['netaddr==0.8.0', 'pyyaml', 'requests>=2.25.0, <=2.31.0'],
     license="GNU General Public License v3",
     long_description=readme + '\n\n',
     include_package_data=True,
