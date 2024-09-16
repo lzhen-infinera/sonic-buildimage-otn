@@ -1,1 +1,2 @@
 0001-Passing-fullcone-option-for-SNAT-and-DNAT.patch
+0002-disable-python3-build-dep-when-cross-build.patch

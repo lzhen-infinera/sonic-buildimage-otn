@@ -1,0 +1,24 @@
+diff --git a/src/Linux/Makefile b/src/Linux/Makefile
+index 0cc60a0..991b62d 100644
+--- a/src/Linux/Makefile
++++ b/src/Linux/Makefile
+@@ -178,7 +178,7 @@ HEADERS= util.h util_dbus.h util_netlink.h evbus.h hsflowd.h hsflowtokens.h hsfl
+ #CC= g++
+ CC= gcc -std=gnu99
+ #LD=ld
+-LD=gcc
++LD=$(CC)
+ 
+ # optimization
+ OPT_ALL= -O3 -DNDEBUG
+@@ -293,8 +293,8 @@ ifeq ($(REDISONLY),yes)
+ endif
+ 
+ # DBUS requires dbus-dev(el) or libdbus-1-dev
+-CFLAGS_DBUS=$(shell pkg-config dbus-1 --cflags)
+-LIBS_DBUS=$(shell pkg-config dbus-1 --libs)
++CFLAGS_DBUS=$(shell $(PKG_CONFIG) dbus-1 --cflags)
++LIBS_DBUS=$(shell $(PKG_CONFIG) dbus-1 --libs)
+ 
+ CFLAGS_NETLINK=
+ LIBS_NETLINK=
