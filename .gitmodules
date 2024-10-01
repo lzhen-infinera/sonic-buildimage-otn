@@ -6,7 +6,7 @@
 	url = https://github.com/sonic-net/sonic-linux-kernel
 [submodule "sonic-sairedis"]
 	path = src/sonic-sairedis
-	url = https://github.com/sonic-net/sonic-sairedis
+	url = https://github.com/lzhen-infinera/sonic-sairedis
 [submodule "sonic-swss"]
 	path = src/sonic-swss
 	url = https://github.com/sonic-net/sonic-swss
@@ -24,7 +24,7 @@
 	url = https://github.com/sonic-net/sonic-py-swsssdk.git
 [submodule "src/sonic-snmpagent"]
 	path = src/sonic-snmpagent
-	url = https://github.com/sonic-net/sonic-snmpagent
+	url = https://github.com/lzhen-infinera/sonic-snmpagent
 [submodule "src/ptf"]
 	path = src/ptf
 	url = https://github.com/p4lang/ptf.git
@@ -114,7 +114,7 @@
 	url = https://github.com/sonic-net/sonic-dhcpmon.git
 [submodule "src/sonic-dash-api"]
 	path = src/sonic-dash-api
-	url = https://github.com/sonic-net/sonic-dash-api.git
+	url = https://github.com/lzhen-infinera/sonic-dash-api.git
 [submodule "platform/marvell/mrvl-prestera"]
 	path = platform/marvell/mrvl-prestera
 	url = https://github.com/Marvell-switching/mrvl-prestera.git

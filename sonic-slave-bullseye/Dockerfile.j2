@@ -789,7 +789,7 @@ RUN eatmydata apt-get install -y --no-install-recommends \
     libboost-program-options-dev:$arch
 
 RUN apt-get download libgirepository1.0-dev:$arch && eatmydata dpkg --force-all -i libgirepository1.0-dev*
-RUN PATH=/python_virtualenv/env3/bin/:$PATH pip3 install pycairo
+RUN PATH=/python_virtualenv/env3/bin/:$PATH pip3 install pycairo==1.26.0
 
 # Install libpcsclite-dev for wpasupplicant using download because regular install removes amd64 python package
 RUN apt-get download libpcsclite1:$arch && eatmydata dpkg --force-all -i libpcsclite1* && apt-get download libpcsclite-dev:$arch && eatmydata dpkg --force-all -i libpcsclite-dev*
