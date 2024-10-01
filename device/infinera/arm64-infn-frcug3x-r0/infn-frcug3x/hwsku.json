@@ -1,0 +1,8 @@
+{
+    "interfaces": {
+        "Ethernet0": {
+            "default_brkout_mode": "1x1G",
+            "port_type": "RJ45"
+        }
+    }   
+}

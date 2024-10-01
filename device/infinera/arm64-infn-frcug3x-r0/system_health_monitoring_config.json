@@ -1,0 +1,11 @@
+{
+    "services_to_ignore": [],
+    "devices_to_ignore": [
+        "asic",
+        "psu",
+        "fan",
+        "sfp"
+    ],
+    "user_defined_checkers": [],
+    "polling_interval": 60
+}

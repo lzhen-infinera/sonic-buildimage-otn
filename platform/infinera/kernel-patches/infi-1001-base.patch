@@ -1,0 +1,630 @@
+diff --git a/arch/arm64/boot/dts/freescale/infn-ls1046a-tfa.dts b/arch/arm64/boot/dts/freescale/infn-ls1046a-tfa.dts
+new file mode 100644
+index 000000000000..d270bf609c88
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/infn-ls1046a-tfa.dts
+@@ -0,0 +1,560 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Device Tree Include file for Freescale Layerscape-1046A family SoC.
++ *
++ * Copyright 2016 Freescale Semiconductor, Inc.
++ * Copyright 2019 NXP
++ *
++ * Mingkai Hu <mingkai.hu@nxp.com>
++ */
++
++/dts-v1/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include "fsl-ls1046a.dtsi"
++
++/ {
++	model = "INFN LS1046A Board";
++	compatible = "infn,ls1046a", "fsl,ls1046a";
++
++	aliases {
++		serial0 = &duart0;
++		serial1 = &duart1;
++		serial2 = &duart2;
++		serial3 = &duart3;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++};
++
++&duart0 {
++	status = "okay";
++};
++
++&duart1 {
++	status = "okay";
++};
++
++&i2c0 {
++        /delete-property/ dmas;
++        /delete-property/ dma-names;
++	scl-gpios = <&gpio0 22 0>;
++	status = "okay";
++};
++
++&i2c1 {
++	scl-gpios = <&gpio1 7 0>;
++	status = "okay";
++
++	tmp435@4d {
++		compatible = "tmp401";
++		reg = <0x4d>;
++	};
++};
++
++&i2c2 {
++	scl-gpios = <&gpio1 8 0>;
++	status = "okay";
++
++	pcf8563:rtc@51 {
++		compatible = "nxp,pcf8563";
++		reg = <0x51>;
++		#clock-cells = <0>;
++	};
++};
++
++&i2c3 {
++	status = "okay";
++
++	tmp435@4c {
++		compatible = "tmp401";
++		reg = <0x4c>;
++	};
++};
++
++&wdog0 {
++        clocks = <&pcf8563>;
++};
++
++&soc {
++	gpiowdt: watchdog {
++		compatible = "linux,wdt-gpio";
++		gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
++		hw_algo = "level";
++		hw_margin_ms = <1600>;
++	};
++};
++
++&ifc {
++	#address-cells = <2>;
++	#size-cells = <1>;
++	/* NAND Flashe and CPLD on board */
++	ranges = <0x0 0x0 0x0 0x7e800000 0x00010000
++		  0x2 0x0 0x0 0x7fb00000 0x00000100>;
++	status = "okay";
++
++	nand@0,0 {
++		compatible = "fsl,ifc-nand";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		reg = <0x0 0x0 0x10000>;
++	};
++
++	cpld: board-control@2,0 {
++		compatible = "fsl,ls1046ardb-cpld";
++		reg = <0x2 0x0 0x0000100>;
++	};
++};
++
++&qspi {
++	status = "okay";
++	reg = <0x0 0x1550000 0x0 0x10000>, <0x0 0x40000000 0x0 0x20000000>;
++	mx66u1g45g: flash@0 {
++		compatible = "jedec,spi-nor";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		spi-max-frequency = <50000000>;
++		spi-rx-bus-width = <1>;
++		spi-tx-bus-width = <1>;
++		reg = <0>;
++
++		partition@0 {
++			/* RCW + PBI  */
++			reg = <0x0 0x00100000>;
++			label = "pbl";
++			read-only;
++		};
++
++		partition@1 {
++			/* atf + U-Boot */
++			reg = <0x00100000 0x00400000>;
++			label = "fip";
++		};
++
++		partition@2 {
++			/* U-Boot environment varialbes */
++			reg = <0x00500000 0x00100000>;
++			label = "uboot-env";
++			env_size = <0x20000>;
++		};
++
++		partition@3 {
++			reg = <0x00600000 0x00300000>;
++			label = "secure-boot-headers";
++		};
++
++		partition@4 {
++			/* FMAN firmware*/
++			reg = <0x00900000 0x00040000>;
++			label = "fman";
++		};
++
++		partition@5 {
++			reg = <0x00940000 0x00040000>;
++			label = "qe";
++		};
++
++		partition@6 {
++			reg = <0x00980000 0x00040000>;
++			label = "ISK";
++		};
++
++		partition@7 {
++			reg = <0x009c0000 0x00040000>;
++			label = "log";
++		};
++
++		partition@8 {
++			reg = <0x00a00000 0x00600000>;
++			label = "FDR";
++		};
++
++		partition@9 {
++			/* ONIE image */
++			reg = <0x01000000 0x01400000>;
++			label = "onie";
++		};
++		partition@10 {
++			/* flash disk */
++			reg = <0x02400000 0x01b80000>;
++			label = "fda";
++		};
++
++		partition@11 {
++			/* u-boot script */
++			reg = <0x03f80000 0x00040000>;
++			label = "uboot-script";
++		};
++
++		partition@12 {
++			/* ONIE TLV HW info */
++			reg = <0x03fc0000 0x00040000>;
++			label = "hw-info";
++		};
++               partition@13 {
++                       /* RCW + PBI  */
++                       reg = <0x04000000 0x00100000>;
++                       label = "pbl.bak";
++                       read-only;
++               };
++
++               partition@14 {
++                       /* atf + U-Boot */
++                       reg = <0x04100000 0x00400000>;
++                       label = "fip.bak";
++               };
++
++               partition@15 {
++                       /* U-Boot environment varialbes */
++                       reg = <0x04500000 0x00100000>;
++                       label = "ubootenv.bak";
++               };
++
++               partition@16 {
++                       reg = <0x04600000 0x00300000>;
++                       label = "secure-boot-headers.bak";
++               };
++
++               partition@17 {
++                       /* FMAN firmware*/
++                       reg = <0x04900000 0x00040000>;
++                       label = "fman.bak";
++               };
++
++               partition@18 {
++                       reg = <0x04940000 0x00040000>;
++                       label = "qe.bak";
++               };
++
++               partition@19 {
++                       reg = <0x04980000 0x00040000>;
++                       label = "ISK.bak";
++               };
++
++               partition@20 {
++                       reg = <0x049c0000 0x00040000>;
++                       label = "log.bak";
++               };
++
++               partition@21 {
++                       reg = <0x04a00000 0x00600000>;
++                       label = "FDR.bak";
++               };
++
++               partition@22 {
++                       /* ONIE image */
++                       reg = <0x05000000 0x01400000>;
++                       label = "onie.bak";
++               };
++               partition@23 {
++                       /* flash disk */
++                       reg = <0x06400000 0x01b80000>;
++                       label = "fda.bak";
++               };
++
++               partition@24 {
++                       /* u-boot script */
++                       reg = <0x07f80000 0x00040000>;
++                       label = "uboot-script.bak";
++               };
++
++               partition@25 {
++                       /* ONIE TLV HW info */
++                       reg = <0x07fc0000 0x00040000>;
++                       label = "hw-info.bak";
++               };
++               partition@26 {
++                       /* whole mtd device */
++                       reg = <0x0 0x08000000>;
++                       label = "whole";
++               };
++	};
++};
++
++#include "fsl-ls1046-post.dtsi"
++
++&fman0 {
++	ethernet@e4000 {
++		phy-handle = <&rgmii_phy1>;
++		phy-connection-type = "rgmii-id";
++	};
++
++	ethernet@e6000 {
++		phy-handle = <&rgmii_phy2>;
++		phy-connection-type = "rgmii-id";
++	};
++
++	ethernet@e8000 {
++		phy-handle = <&sgmii_phy1>;
++		phy-connection-type = "sgmii";
++	};
++
++	ethernet@ea000 {
++		fixed-link = <0 1 1000 0 0>;
++		phy-connection-type = "sgmii";
++	};
++
++	ethernet@f0000 { /* 10GEC1 */
++		fixed-link = <0 1 1000 0 0>;
++		phy-connection-type = "xgmii";
++	};
++
++	ethernet@f2000 { /* 10GEC2 */
++		fixed-link = <0 1 1000 0 0>;
++		phy-connection-type = "xgmii";
++	};
++
++	mdio@fc000 {
++		rgmii_phy1: ethernet-phy@1 {
++			reg = <0x1>;
++		};
++
++		rgmii_phy2: ethernet-phy@2 {
++			reg = <0x2>;
++		};
++
++		sgmii_phy1: ethernet-phy@3 {
++			reg = <0x3>;
++		};
++
++		sgmii_phy2: ethernet-phy@4 {
++			reg = <0x4>;
++		};
++	};
++};
++
++//#include "qoriq-qman-portals-sdk.dtsi"
++//#include "qoriq-bman-portals-sdk.dtsi"
++
++&bman_fbpr {
++	compatible = "fsl,bman-fbpr";
++	alloc-ranges = <0 0 0x10000 0>;
++};
++&qman_fqd {
++	compatible = "fsl,qman-fqd";
++	alloc-ranges = <0 0 0x10000 0>;
++};
++&qman_pfdr {
++	compatible = "fsl,qman-pfdr";
++	alloc-ranges = <0 0 0x10000 0>;
++};
++
++&soc {
++/delete-property/ dma-coherent;
++
++//#include "qoriq-dpaa-eth.dtsi"
++//#include "qoriq-fman3-0-6oh.dtsi"
++
++/delete-node/ iommu@9000000;
++};
++
++&pcie1 {
++	/delete-property/ iommu-map;
++};
++
++&pcie2 {
++	/delete-property/ iommu-map;
++};
++
++&pcie3 {
++	/delete-property/ iommu-map;
++};
++
++/*&fsldpaa {
++	ethernet@0 {
++		status = "disabled";
++	};
++	ethernet@1 {
++		status = "disabled";
++	};
++	ethernet@2 {
++		status = "disabled";
++	};
++	ethernet@3 {
++		status = "disabled";
++	};
++	ethernet@4 {
++		status = "disabled";
++	};
++	ethernet@9 {
++		status = "disabled";
++	};
++};*/
++
++&fman0 {
++	compatible = "fsl,fman", "simple-bus";
++};
++
++&clockgen {
++	dma-coherent;
++};
++
++&scfg {
++	dma-coherent;
++};
++
++&crypto {
++	dma-coherent;
++};
++
++&dcfg {
++	dma-coherent;
++};
++
++&ifc {
++	dma-coherent;
++};
++
++&qspi {
++	dma-coherent;
++};
++
++&esdhc {
++	dma-coherent;
++};
++
++&ddr {
++	dma-coherent;
++};
++
++&tmu {
++	dma-coherent;
++};
++
++&qman {
++	dma-coherent;
++};
++
++&bman {
++	dma-coherent;
++};
++
++&bportals {
++	dma-coherent;
++};
++
++&qportals {
++	dma-coherent;
++};
++
++&dspi {
++	dma-coherent;
++};
++
++&i2c0 {
++	dma-coherent;
++};
++
++&i2c1 {
++	dma-coherent;
++};
++
++&i2c2 {
++	dma-coherent;
++};
++
++&i2c3 {
++	dma-coherent;
++};
++
++&duart0 {
++	dma-coherent;
++};
++
++&duart1 {
++	dma-coherent;
++};
++
++&duart2 {
++	dma-coherent;
++};
++
++&duart3 {
++	dma-coherent;
++};
++
++&gpio0 {
++	dma-coherent;
++};
++
++&gpio1 {
++	dma-coherent;
++};
++
++&gpio2 {
++	dma-coherent;
++};
++
++&gpio3 {
++	dma-coherent;
++};
++
++&lpuart0 {
++	dma-coherent;
++};
++
++&lpuart1 {
++	dma-coherent;
++};
++
++&lpuart2 {
++	dma-coherent;
++};
++
++&lpuart3 {
++	dma-coherent;
++};
++
++&lpuart4 {
++	dma-coherent;
++};
++
++&lpuart5 {
++	dma-coherent;
++};
++
++&ftm_alarm0 {
++	dma-coherent;
++};
++
++&wdog0 {
++	dma-coherent;
++};
++
++&edma0 {
++	dma-coherent;
++};
++
++&sata {
++	dma-coherent;
++};
++
++&qdma {
++	dma-coherent;
++};
++
++&msi1 {
++	dma-coherent;
++};
++
++&msi2 {
++	dma-coherent;
++};
++
++&msi3 {
++	dma-coherent;
++};
++
++&fman0 {
++	dma-coherent;
++};
++
++&ptp_timer0 {
++	dma-coherent;
++};
++
++/*&fsldpaa {
++	dma-coherent;
++};*/
+diff --git a/drivers/crypto/caam/caamalg.c b/drivers/crypto/caam/caamalg.c
+index 1a4ad26012a3..ed917e6d2d48 100644
+--- a/drivers/crypto/caam/caamalg.c
++++ b/drivers/crypto/caam/caamalg.c
+@@ -67,7 +67,7 @@
+ /*
+  * crypto alg
+  */
+-#define CAAM_CRA_PRIORITY		3000
++#define CAAM_CRA_PRIORITY		30
+ /* max key is sum of AES_MAX_KEY_SIZE, max split key size */
+ #define CAAM_MAX_KEY_SIZE		(AES_MAX_KEY_SIZE + \
+ 					 CTR_RFC3686_NONCE_SIZE + \
+diff --git a/drivers/crypto/caam/caamalg_qi.c b/drivers/crypto/caam/caamalg_qi.c
+index 35a613443e6f..ec0f3612e79c 100644
+--- a/drivers/crypto/caam/caamalg_qi.c
++++ b/drivers/crypto/caam/caamalg_qi.c
+@@ -24,7 +24,7 @@
+ /*
+  * crypto alg
+  */
+-#define CAAM_CRA_PRIORITY		2000
++#define CAAM_CRA_PRIORITY		20
+ /* max key is sum of AES_MAX_KEY_SIZE, max split key size */
+ #define CAAM_MAX_KEY_SIZE		(AES_MAX_KEY_SIZE + \
+ 					 SHA512_DIGEST_SIZE * 2)
+diff --git a/drivers/crypto/caam/caamhash.c b/drivers/crypto/caam/caamhash.c
+index 16d27b880b46..88cd4bbb3f61 100644
+--- a/drivers/crypto/caam/caamhash.c
++++ b/drivers/crypto/caam/caamhash.c
+@@ -67,7 +67,7 @@
+ #include "caamhash_desc.h"
+ #include <crypto/engine.h>
+ 
+-#define CAAM_CRA_PRIORITY		3000
++#define CAAM_CRA_PRIORITY		30
+ 
+ /* max hash key is max split key size */
+ #define CAAM_MAX_HASH_KEY_SIZE		(SHA512_DIGEST_SIZE * 2)
+diff --git a/drivers/mtd/spi-nor/macronix.c b/drivers/mtd/spi-nor/macronix.c
+index 99140fc9305b..46a581509936 100644
+--- a/drivers/mtd/spi-nor/macronix.c
++++ b/drivers/mtd/spi-nor/macronix.c
+@@ -191,6 +191,7 @@ static const struct flash_info macronix_nor_parts[] = {
+ 	{ "mx66u51235f", INFO(0xc2253a, 0, 64 * 1024, 1024)
+ 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
+ 		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
++        { "mx66u1g45g",  INFO(0xc2253b, 0, 64 * 1024, 2048) NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
+ 	{ "mx66l1g45g",  INFO(0xc2201b, 0, 64 * 1024, 2048)
+ 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+ 			      SPI_NOR_QUAD_READ) },
+diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+index ac6f780dc..9fffb034d 100644
+--- a/arch/arm64/boot/dts/freescale/Makefile
++++ b/arch/arm64/boot/dts/freescale/Makefile
+@@ -49,6 +49,8 @@ dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls1028a-qds-85bb.dtb
+ dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls1028a-qds-899b.dtb
+ dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls1028a-qds-9999.dtb
+ 
++dtb-$(CONFIG_ARCH_LAYERSCAPE) += infn-ls1046a-tfa.dtb
++
+ dtb-$(CONFIG_ARCH_MXC) += imx8dxl-evk.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-beacon-kit.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-data-modul-edm-sbc.dtb

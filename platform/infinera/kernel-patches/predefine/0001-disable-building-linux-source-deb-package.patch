@@ -1,0 +1,24 @@
+diff --git a/debian/config/defines b/debian/config/defines
+index 8c7c865..a912314 100644
+--- a/debian/config/defines
++++ b/debian/config/defines
+@@ -171,3 +171,6 @@ gcc-12: gcc-12 <!stage1 !cross !pkg.linux.nokernel>, gcc-12-@gnu-type-package@ <
+ # initramfs-generators
+ initramfs-fallback: linux-initramfs-tool
+ initramfs-tools: initramfs-tools (>= 0.120+deb8u2)
++
++[packages]
++source: false
+diff --git a/debian/control.md5sum b/debian/control.md5sum
+index 1ecce95..2eb5a25 100644
+--- a/debian/control.md5sum
++++ b/debian/control.md5sum
+@@ -39,7 +39,7 @@ bdb7e8060e7b1168d7ea5d1d745a5aa9  debian/templates/sourcebin.meta.control.in
+ a20d83421667bad21739041d4e743ed1  debian/templates/sourcebin.meta.maintscript.in
+ cbc5b0a81441c4c98b329ebe10827812  debian/templates/tools-unversioned.control.in
+ 568f629072d584e9a0eb1dc9d3a94749  debian/templates/tools-versioned.control.in
+-7c8f50b4ae04db2a069e3922efd56eb8  debian/config/defines
++83acc020967857bcb574587592539b66  debian/config/defines
+ 59a811890d2e7129bec940075850f11f  debian/config/alpha/defines
+ 60569b1b4c618e2fe7b135f687d0f0d2  debian/config/amd64/defines
+ bc35d767074baf305423437d049be85d  debian/config/arm64/defines

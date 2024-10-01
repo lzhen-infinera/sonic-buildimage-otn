@@ -1,0 +1,10 @@
+# This series applies on GIT commit 18c5597832fcf6988111b05a9a1607ae148723c
+# Note: Markers should start with "###->". 
+#       Header should end with .*-start eg: any_description-start
+#       Footer must end with .*-end eg: any_description-end
+#       Markers should not be nested
+
+# Security patch
+0001-Change-the-system.map-file-permission-only-readable-.patch
+
+

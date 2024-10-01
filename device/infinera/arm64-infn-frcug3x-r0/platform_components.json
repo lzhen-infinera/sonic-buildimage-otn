@@ -1,0 +1,10 @@
+{
+    "chassis": {
+        "g3x": {
+            "component": {
+                "U-Boot": { },
+                "System-CPLD": { }
+            }
+        }
+    }
+}
