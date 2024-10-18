@@ -5,6 +5,7 @@ include $(PLATFORM_PATH)/docker-syncd-ot-vs.mk
 include $(PLATFORM_PATH)/one-image.mk
 #include $(PLATFORM_PATH)/onie.mk
 include $(PLATFORM_PATH)/kernel_override.mk
+include $(PLATFORM_PATH)/sai-modules.mk
 
 SONIC_ALL += $(SONIC_ONE_IMAGE)
 
